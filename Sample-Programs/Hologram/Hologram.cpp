@@ -657,6 +657,7 @@ void Hologram::prepare_framebuffers(VkSwapchainKHR swapchain) {
     }
 }
 
+
 void Hologram::update_camera() {
     const glm::vec3 center(0.0f);
     const glm::vec3 up(0.f, 0.0f, 1.0f);
@@ -664,12 +665,56 @@ void Hologram::update_camera() {
 
     float aspect = static_cast<float>(extent_.width) / static_cast<float>(extent_.height);
     const glm::mat4 projection = glm::perspective(0.4f, aspect, 0.1f, 100.0f);
+    const glm::mat4 projectionInvertY = glm::perspectiveInvertY(0.4f, aspect, 0.1f, 100.0f);
+    const glm::mat4 projectionInvertYScaleZ = glm::perspectiveInvertYScaleZ(0.4f, aspect, 0.1f, 100.0f);
 
     // Vulkan clip space has inverted Y and half Z.
+    // Original
     const glm::mat4 clip(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 1.0f);
+    // Inverted Y
+    const glm::mat4 clipInvertY(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 1.0f);
+    // InvertYScaleZ
+    const glm::mat4 clipInvertYScaleZ;
+
+    {
+	    printf("Original result: **************************\n");
+	    const glm::mat4 pc = clip * projection;
+	    for (int i=0;i<4;i++) {
+	    for (int j=0;j<4;j++) {
+		    printf("%f ", pc[i][j]);
+	    }
+		 printf("\n");
+	    }
+   }
+
+
+    {
+	    printf("Inverted Y result: **************************\n");
+	    const glm::mat4 pc = clipInvertY * projectionInvertY;
+	    for (int i=0;i<4;i++) {
+	    for (int j=0;j<4;j++) {
+		    printf("%f ", pc[i][j]);
+	    }
+		 printf("\n");
+	    }
+   }
+
+
+    {
+	    printf("Inverted Y result: **************************\n");
+	    const glm::mat4 pc = clipInvertYScaleZ * projectionInvertYScaleZ;
+	    for (int i=0;i<4;i++) {
+	    for (int j=0;j<4;j++) {
+		    printf("%f ", pc[i][j]);
+	    }
+		 printf("\n");
+	    }
+   }
+
 
     camera_.view_projection = clip * projection * view;
 }
+
 
 void Hologram::draw_object(const Simulation::Object &obj, FrameData &data, VkCommandBuffer cmd) const {
     if (use_push_constants_) {

@@ -188,6 +188,21 @@ namespace glm
 		T const & near,
 		T const & far);
 
+
+	template <typename T, precision P>
+	GLM_FUNC_DECL detail::tmat4x4<T, P> perspectiveInvertY(
+		T const & fovy,
+		T const & aspect,
+		T const & near,
+		T const & far);
+
+	template <typename T, precision P>
+	GLM_FUNC_DECL detail::tmat4x4<T, P> perspectiveInvertYScaleZ(
+		T const & fovy,
+		T const & aspect,
+		T const & near,
+		T const & far);
+
 	/// Builds a perspective projection matrix based on a field of view.
 	/// 
 	/// @param fov Expressed in radians if GLM_FORCE_RADIANS is define or degrees otherwise.

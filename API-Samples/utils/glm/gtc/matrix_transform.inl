@@ -244,6 +244,84 @@ namespace glm
 		return Result;
 	}
 	
+
+
+	template <typename valType>
+	GLM_FUNC_QUALIFIER detail::tmat4x4<valType, defaultp> perspectiveInvertY
+	(
+		valType const & fovy,
+		valType const & aspect,
+		valType const & zNear,
+		valType const & zFar
+	)
+	{
+		assert(aspect != valType(0));
+		assert(zFar != zNear);
+
+#ifdef GLM_FORCE_RADIANS
+		valType const rad = fovy;
+#else
+#		pragma message("GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+		valType const rad = glm::radians(fovy);
+#endif
+
+		valType tanHalfFovy = tan(rad / valType(2));
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		detail::tmat4x4<valType, defaultp> Result(valType(0));
+		Result[0][0] = valType(1) / (aspect * tanHalfFovy);
+		// Original(Inverted in clip)
+		// Result[1][1] = valType(1) / (tanHalfFovy);
+		// No Inverted in clip)
+		Result[1][1] = -valType(1) / (tanHalfFovy);
+		Result[2][2] = - (zFar + zNear) / (zFar - zNear);
+		Result[2][3] = - valType(1);
+		Result[3][2] = - (valType(2) * zFar * zNear) / (zFar - zNear);
+		return Result;
+	}
+
+
+
+	template <typename valType>
+	GLM_FUNC_QUALIFIER detail::tmat4x4<valType, defaultp> perspectiveInvertYScaleZ
+	(
+		valType const & fovy,
+		valType const & aspect,
+		valType const & zNear,
+		valType const & zFar
+	)
+	{
+		assert(aspect != valType(0));
+		assert(zFar != zNear);
+
+#ifdef GLM_FORCE_RADIANS
+		valType const rad = fovy;
+#else
+#		pragma message("GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+		valType const rad = glm::radians(fovy);
+#endif
+
+		valType tanHalfFovy = tan(rad / valType(2));
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		detail::tmat4x4<valType, defaultp> Result(valType(0));
+		Result[0][0] = valType(1) / (aspect * tanHalfFovy);
+		// Original(Inverted in clip)
+		// Result[1][1] = valType(1) / (tanHalfFovy);
+		// No Inverted in clip)
+		Result[1][1] = -valType(1) / (tanHalfFovy);
+		// Original ()
+		// Result[2][2] = - (zFar + zNear) / (zFar - zNear);
+
+		// Saceld Z:
+		Result[2][2] = zFar / (zNear-zFar);
+		Result[2][3] = - valType(1);
+		// Original 
+		//Result[3][2] = - (valType(2) * zFar * zNear) / (zFar - zNear);
+		// Scaled Z:
+		Result[3][2] =  (zFar * zNear) / (zNear - zFar);
+		return Result;
+	}
+
+
 	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType, defaultp> perspectiveFov
 	(
